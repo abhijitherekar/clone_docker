@@ -23,6 +23,20 @@ func main() {
 			syscall.CLONE_NEWPID |
 			syscall.CLONE_NEWUSER |
 			syscall.CLONE_NEWUTS,
+		UidMappings: []syscall.SysProcIDMap{
+			{
+				ContainerID: 0,
+				HostID:      os.Getuid(),
+				Size:        1,
+			},
+		},
+		GidMappings: []syscall.SysProcIDMap{
+			{
+				ContainerID: 0,
+				HostID:      os.Getgid(),
+				Size:        1,
+			},
+		},
 	}
 	if err := cmd.Run(); err != nil {
 		log.Fatalln("Error while running cmd")
