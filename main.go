@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
@@ -20,6 +21,12 @@ func init() {
 func hninit() {
 	fmt.Println("Setting hostname")
 	syscall.Sethostname([]byte("check123"))
+	newrootPath := os.Args[1]
+	fmt.Println("newRoot:", newrootPath)
+	mountProc(newrootPath)
+	if err := mountPivot(newrootPath); err != nil {
+		log.Fatalln(err)
+	}
 	run()
 }
 
@@ -36,7 +43,10 @@ func run() {
 	}
 }
 func main() {
-	cmd := reexec.Command("hninit")
+	var rootfsPath string
+	flag.StringVar(&rootfsPath, "rootfs", "/home/abhi/work/go/src/github.com/Golang_play/clone_docker/busybox", "Path to the root filesystem to use")
+	flag.Parse()
+	cmd := reexec.Command("hninit", rootfsPath)
 
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
